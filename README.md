@@ -11,6 +11,7 @@ demanda.
 | Skill | O que faz |
 |---|---|
 | [`feature-planning`](feature-planning/) | Planejamento de produto antes do código: PRD, one-pager, PR/FAQ, RFC, quebra em fatias verticais, critérios de aceite (EARS/Gherkin), priorização (RICE, ICE, MoSCoW, Kano, WSJF), roadmap (Now/Next/Later, outcome-based) e simulação de cenários de negócio. |
+| [`claude-github-product-workflow`](claude-github-product-workflow/) | Fluxo de feedback do produto ao código: formulário in-app, GitHub Issues, triagem e implementação com Claude, PR draft e revisão. |
 
 ## Instalação
 

@@ -1,0 +1,33 @@
+name: Funcionalidade
+description: Proposta de mudança ou recurso novo
+labels: ["enhancement", "triagem:pendente"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: Que dor isso resolve e para quem?
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Proposta
+    validations:
+      required: true
+  - type: textarea
+    id: aceite
+    attributes:
+      label: Critérios de aceite
+      placeholder: "- [ ] ..."
+    validations:
+      required: true
+  - type: input
+    id: area
+    attributes:
+      label: Área afetada
+      description: "ADAPTAR: prefira dropdown com as áreas reais do projeto."
+  - type: textarea
+    id: fora
+    attributes:
+      label: Fora de escopo
