@@ -56,9 +56,9 @@ Crie um endpoint autenticado, por exemplo `POST /reportes`:
 1. valide e normalize o payload;
 2. derive usuário, organização/tenant, e-mail e data no servidor — nunca aceite esse contexto do cliente;
 3. aplique rate limit por conta ou sessão autenticada, não apenas por IP compartilhado;
-4. monte o corpo Markdown com os mesmos títulos e ordem dos Issue Forms em `assets/.github/ISSUE_TEMPLATE/`;
+4. monte o corpo Markdown com os mesmos títulos e ordem dos Issue Forms do repositório (`.github/ISSUE_TEMPLATE/`); sem Issue Forms, use as seções do exemplo da seção 5;
 5. faça `POST https://api.github.com/repos/{owner}/{repo}/issues` com `title`, `body` e labels;
-6. aplique `triagem:pendente` e `bug` ou `enhancement`;
+6. aplique `bug` ou `enhancement` e, se o repositório tiver triagem automática (skill `issue-ate-pr-com-ia`), a label de entrada dela, `triagem:pendente`; use só labels que existem (`gh label list`);
 7. transforme erro do GitHub em falha controlada (`502` é adequado) e configuração ausente em indisponibilidade (`503`); registre status técnico no servidor sem vazar credenciais ao cliente.
 
 O repositório alvo e o user-agent da integração devem ser configuração server-side. Se o projeto atende múltiplas instalações, valide o destino contra uma allowlist; nunca aceite `owner/repo` arbitrário no payload.
@@ -101,7 +101,7 @@ Enviado em: ...
 ```
 
 - Preserve texto do usuário como conteúdo; não o interprete nem execute no backend.
-- O workflow de triagem deve continuar tratando todo esse conteúdo como dado não confiável.
+- Se houver agente lendo a issue (triagem automática), ele deve tratar todo esse conteúdo como dado não confiável: o corpo foi escrito por usuário do produto.
 - Colete o mínimo contexto necessário. Só envie identificadores pessoais ao GitHub se o repositório for privado, a equipe precisar deles para investigar e a interface avisar o usuário.
 - Não aceite anexos na primeira versão. Adicione upload privado e links expirados somente quando evidências em texto forem insuficientes.
 
@@ -119,4 +119,4 @@ Deixe checks que falhem se o contrato quebrar:
 - integração do backend com `fetch` mockado: autenticação, payload/labels, token ausente, erro do GitHub e rate limit;
 - browser/E2E: abre no desktop e mobile, alterna o tipo, envia, mostra número da issue, fecha em sucesso e não causa overflow horizontal.
 
-Não abra issue real nos testes. Só faça smoke real contra o GitHub quando o usuário autorizar, pois ele dispara a triagem e consome cota.
+Não abra issue real nos testes. Só faça smoke real contra o GitHub quando o usuário autorizar: cria issue de verdade e, com triagem automática, dispara o agente e consome cota.

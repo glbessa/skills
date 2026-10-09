@@ -22,7 +22,7 @@ Não sobrescreva helpers compartilhados. Faça os imports dos templates apontare
 2. Garanta que o tratamento global converta validação Zod em `400`, rate limit em `429`, configuração ausente em `503` e falha do GitHub em `502`.
 3. Acrescente `GITHUB_TOKEN_ISSUES` ao schema de ambiente como opcional, para a ausência desativar apenas esta rota.
 4. Renderize `<Reportar>` uma vez no layout autenticado e abra-o por uma ação global visível no desktop e no menu mobile.
-5. Ajuste os títulos Markdown de `corpoIssue` para permanecerem idênticos aos Issue Forms empacotados na skill.
+5. Ajuste os títulos Markdown de `corpoIssue` para ficarem idênticos aos Issue Forms do repositório alvo (`.github/ISSUE_TEMPLATE/`), se existirem.
 
 O template usa HTML nativo para validação no frontend e Zod como autoridade no backend. Não adicione React Hook Form apenas para este formulário curto.
 

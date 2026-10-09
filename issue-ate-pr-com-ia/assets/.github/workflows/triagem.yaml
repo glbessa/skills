@@ -25,6 +25,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: anthropics/claude-code-action@v1
+        id: agente
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
@@ -49,3 +50,25 @@ jobs:
           claude_args: |
             --max-turns 40
             --allowedTools "Read,Grep,Glob,Bash(git log:*),Bash(git show:*),mcp__github__search_issues,mcp__github__get_issue,mcp__github__list_issues,mcp__github__update_issue,mcp__github__add_issue_comment"
+
+      # O resultado da triagem mora na issue, não no log. Sem isto, ver o que
+      # o agente decidiu custa abrir a issue em outra aba.
+      - name: Resumo da triagem
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULTADO: ${{ steps.agente.outcome }}
+        run: |
+          gh issue view "$ISSUE" --repo "$GITHUB_REPOSITORY" \
+            --json title,url,labels,comments \
+            --jq '
+              "## Triagem da issue #\(env.ISSUE): \(.title)",
+              "",
+              "Agente: `\(env.RESULTADO)` · \(.url)",
+              "",
+              "**Labels:** \(if (.labels|length) > 0 then (.labels|map("`"+.name+"`")|join(" ")) else "_nenhuma_" end)",
+              "",
+              "---",
+              "",
+              (.comments | map(select(.author.login | startswith("claude"))) | last | .body // "_O agente não postou comentário._")
+            ' >> "$GITHUB_STEP_SUMMARY"

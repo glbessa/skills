@@ -35,6 +35,11 @@ export type ContextoReporte = {
 const secao = (titulo: string, valor?: string) =>
   `### ${titulo}\n\n${valor?.trim() || SEM_RESPOSTA}\n\n`;
 
+/**
+ * O corpo repete, seção por seção, o que os formulários de
+ * `.github/ISSUE_TEMPLATE/` produzem. Quem lê a issue (pessoa ou triagem
+ * automática) recebe os dois caminhos igual; divergir daria à via in-app um input pior.
+ */
 export function corpoIssue(d: Reporte, ctx: ContextoReporte) {
   const ambiente = [d.url && `Tela: ${d.url}`, d.userAgent && `Navegador: ${d.userAgent}`]
     .filter(Boolean)
@@ -60,6 +65,8 @@ export function corpoIssue(d: Reporte, ctx: ContextoReporte) {
 }
 
 export async function rotasReportes(app: FastifyInstance) {
+  // Cada issue aberta pode acordar um agente de triagem, que custa minuto de Actions.
+  // A chave é a sessão, e não o IP: o limite é por quem reporta.
   await app.register(rateLimit, {
     max: 5,
     timeWindow: '1 hour',
@@ -72,6 +79,7 @@ export async function rotasReportes(app: FastifyInstance) {
 
   app.post('/reportes', async (req) => {
     const dados = reporteSchema.parse(req.body);
+    // Sem o token o resto do sistema sobe normal e só esta rota diz que não dá.
     if (!env.GITHUB_TOKEN_ISSUES) {
       throw Object.assign(new Error('reportes indisponíveis'), { statusCode: 503 });
     }
@@ -101,6 +109,7 @@ export async function rotasReportes(app: FastifyInstance) {
       body: JSON.stringify({
         title: dados.titulo,
         body: corpoIssue(dados, contexto),
+        // ADAPTAR: `triagem:pendente` só se o repo tiver triagem automática (skill issue-ate-pr-com-ia).
         labels: ['triagem:pendente', dados.tipo === 'problema' ? 'bug' : 'enhancement'],
       }),
     });
